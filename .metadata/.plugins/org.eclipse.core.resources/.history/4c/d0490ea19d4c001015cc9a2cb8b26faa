@@ -1,0 +1,28 @@
+#include "stm32f4xx.h"
+
+void GPIO_Init(void) {
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+
+    // PA1 - Input (button)
+    GPIOA->MODER &= ~(3 << (1 * 2));     // Input mode
+    GPIOA->PUPDR &= ~(3 << (1 * 2));
+    GPIOA->PUPDR |=  (1 << (1 * 2));     // Pull-up
+
+    // PA5 - Output
+    GPIOA->MODER &= ~(3 << (5 * 2));
+    GPIOA->MODER |=  (1 << (5 * 2));     // Output mode
+    GPIOA->OTYPER &= ~(1 << 5);          // Push-pull
+    GPIOA->ODR &= ~(1 << 5);             // Tắt ban đầu
+}
+
+int main(void) {
+    GPIO_Init();
+
+    while (1) {
+        if ((GPIOA->IDR & (1 << 1)) == 0) {  // Nếu PA1 bị nhấn (LOW)
+            GPIOA->ODR ^= (1 << 5);          // Đảo trạng thái PA5
+            for (volatile int i = 0; i < 100000; i++); // Chống dội nút
+            while ((GPIOA->IDR & (1 << 1)) == 0);      // Chờ nhả nút
+        }
+    }
+}

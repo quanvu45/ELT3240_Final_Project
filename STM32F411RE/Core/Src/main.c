@@ -14,12 +14,19 @@
 #define ADC_MAX 4095.0f
 
 float MQ2_ConvertPPM(uint16_t adc_value) {
-	float voltage = adc_value * VREF / ADC_MAX;
-	float ratio = voltage / 1.4f;  // giả định 1.4V là mốc tham chiếu
-	float ppm = 1000.0f * powf(10.0f, ((log10f(ratio) - 1.0278f) / 0.6629f));
+    float voltage = (adc_value * 3.3f) / 4095.0f;
+    float Rs = (3.3f - voltage) * 10.0f / voltage; // RL = 10k
 
+    float R0 = 92.8f;  // Đặt theo giá trị đo thực tế
+    float ratio = Rs / R0;
+
+    // Áp dụng công thức log-log từ MQ2 datasheet (LPG)
+    float ppm = 400.0f * powf(ratio, -1.5f);  // Thử với -1.4f hoặc -1.3f nếu cần hạ nhạy
     return ppm;
 }
+
+
+
 
 void EXTI0_IRQHandler(void);
 void EXTI1_IRQHandler(void);
@@ -40,9 +47,9 @@ typedef enum {
     GAS_DANGEROUS = 3        // 3 – Nguy hiểm
 } GasState;
 GasState detect_gas_level(uint32_t adc) {
-	    if (adc < 1000) return GAS_NONE;
-	    else if (adc < 2000) return GAS_LOW;
-	    else if (adc < 3000) return GAS_HIGH;
+	    if (adc < 400) return GAS_NONE;
+	    else if (adc < 550) return GAS_LOW;
+	    else if (adc < 700) return GAS_HIGH;
 	    else return GAS_DANGEROUS;
 }
 static uint32_t last_toggle = 0;

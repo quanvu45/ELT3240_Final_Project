@@ -19,7 +19,6 @@ void TIM4_Init(void) {
 }
 
 void Buttons_Init(void) {
-    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
     RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
 
     // PA0 và PA1 là input + pull-up

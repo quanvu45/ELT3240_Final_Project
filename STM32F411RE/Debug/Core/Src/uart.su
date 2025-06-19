@@ -1,0 +1,8 @@
+../Core/Src/uart.c:6:6:USART1_Init	4	static
+../Core/Src/uart.c:23:6:USART1_ReadChar	4	static
+../Core/Src/uart.c:28:6:USART1_ReadString	24	static
+../Core/Src/uart.c:41:6:USART1_SendChar	16	static
+../Core/Src/uart.c:46:6:USART1_SendString	16	static
+../Core/Src/uart.c:51:6:USART2_Init	4	static
+../Core/Src/uart.c:64:6:USART2_SendChar	16	static
+../Core/Src/uart.c:69:6:USART2_SendString	16	static
