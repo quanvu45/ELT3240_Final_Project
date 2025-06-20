@@ -48,7 +48,7 @@ typedef enum {
 } GasState;
 GasState detect_gas_level(uint32_t adc) {
 	    if (adc < 400) return GAS_NONE;
-	    else if (adc < 500) return GAS_LOW;
+	    else if (adc < 550) return GAS_LOW;
 	    else if (adc < 700) return GAS_HIGH;
 	    else return GAS_DANGEROUS;
 }
@@ -127,7 +127,7 @@ void handle_gas_state(GasState state, SystemState sys,uint32_t x) {
 
         if (state == GAS_DANGEROUS) {
             int min_delay = 10;
-            int max_delay = 200;
+            int max_delay = 100;
             if (x < 700) x = 700;
             if (x > 1023) x = 1023;
 

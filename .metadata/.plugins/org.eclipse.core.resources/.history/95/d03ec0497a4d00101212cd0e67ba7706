@@ -48,7 +48,7 @@ typedef enum {
 } GasState;
 GasState detect_gas_level(uint32_t adc) {
 	    if (adc < 400) return GAS_NONE;
-	    else if (adc < 500) return GAS_LOW;
+	    else if (adc < 550) return GAS_LOW;
 	    else if (adc < 700) return GAS_HIGH;
 	    else return GAS_DANGEROUS;
 }
@@ -125,19 +125,10 @@ void handle_gas_state(GasState state, SystemState sys,uint32_t x) {
             last_toggle = millis;
         }
 
-        if (state == GAS_DANGEROUS) {
-            int min_delay = 10;
-            int max_delay = 200;
-            if (x < 700) x = 700;
-            if (x > 1023) x = 1023;
-
-            int dynamic_delay = max_delay - ((x - 700) * (max_delay - min_delay)) / (1023 - 700);
-
-            if (millis - last_toggle >= dynamic_delay) {
-                toggle ^= 1;
-                RGB_SetPWM(toggle * 255, 0, 0);
-                last_toggle = millis;
-            }
+        if (state == GAS_DANGEROUS && millis - last_toggle >= 125) {
+            toggle ^= 1;
+            RGB_SetPWM(toggle * 255, 0, 0);
+            last_toggle = millis;
         }
     }
 }

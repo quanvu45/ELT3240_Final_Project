@@ -33,6 +33,7 @@ void EXTI1_IRQHandler(void);
 void TIM4_IRQHandler(void);
 volatile uint32_t millis = 0;
 uint32_t last_adc_time = - 10;
+uint32_t adc_value;
 char msg[40];
 typedef enum {
     SYS_IDLE = 0,
@@ -48,7 +49,7 @@ typedef enum {
 } GasState;
 GasState detect_gas_level(uint32_t adc) {
 	    if (adc < 400) return GAS_NONE;
-	    else if (adc < 500) return GAS_LOW;
+	    else if (adc < 550) return GAS_LOW;
 	    else if (adc < 700) return GAS_HIGH;
 	    else return GAS_DANGEROUS;
 }
@@ -125,19 +126,23 @@ void handle_gas_state(GasState state, SystemState sys,uint32_t x) {
             last_toggle = millis;
         }
 
-        if (state == GAS_DANGEROUS) {
-            int min_delay = 10;
-            int max_delay = 200;
-            if (x < 700) x = 700;
-            if (x > 1023) x = 1023;
+        if (state == GAS_DANGEROUS && millis - last_toggle >= 125) {
+            // Giả sử gas_value nằm trong khoảng 700 đến 1023
+            int min_delay = 50;  // Nhấp nháy nhanh nhất
+            int max_delay = 300; // Nhấp nháy chậm nhất ở mức GAS_DANGEROUS
 
-            int dynamic_delay = max_delay - ((x - 700) * (max_delay - min_delay)) / (1023 - 700);
+            // Giới hạn giá trị gas_value để tránh tràn hoặc giá trị bất hợp lệ
+            int clamped_gas = gas_value;
+            if (clamped_gas < 700) clamped_gas = 700;
+            if (clamped_gas > 1023) clamped_gas = 1023;
+
+            // Tính chu kỳ nhấp nháy dựa trên gas_value, càng cao càng nhanh
+            int dynamic_delay = max_delay - ((clamped_gas - 700) * (max_delay - min_delay)) / (1023 - 700);
 
             if (millis - last_toggle >= dynamic_delay) {
                 toggle ^= 1;
                 RGB_SetPWM(toggle * 255, 0, 0);
                 last_toggle = millis;
-            }
         }
     }
 }
@@ -161,7 +166,7 @@ int main(void) {
     lcd_init();
 
 
-    uint32_t adc_value;
+
 
     while (1) {
     	if (sys_state == SYS_ACTIVE) {
