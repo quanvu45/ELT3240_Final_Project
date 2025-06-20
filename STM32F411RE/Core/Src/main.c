@@ -8,8 +8,6 @@
 #include "lcd.h"
 #include <math.h>
 
-#define MQ2_RL 5.0f
-#define MQ2_R0 9.83f
 #define VREF   3.3f
 #define ADC_MAX 4095.0f
 
@@ -162,7 +160,7 @@ int main(void) {
 
     while (1) {
     	if (sys_state == SYS_ACTIVE) {
-    	    if ((millis - last_adc_time) >=10) {
+    	    if ((millis - last_adc_time) >=1000) {
     	        last_adc_time = millis;
         		lcd_set_cursor(0,0);
         		lcd_send_string("Gas:");

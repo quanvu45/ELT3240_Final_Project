@@ -4,8 +4,11 @@
 #include "uart.h"
 
 void USART1_Init(void) {
-    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
-    RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
+	RCC->AHB1ENR &= ~(1 << 0);                    // Clear GPIOA clock enable (bit 0)
+	RCC->AHB1ENR |= (1 << 0);                     // Enable GPIOA clock
+
+	RCC->APB2ENR &= ~(1 << 4);                    // Clear USART1 clock enable (bit 4)
+	RCC->APB2ENR |= (1 << 4);                     // Enable USART1 clock
 
     // PA9 = TX, PA10 = RX (AF7)
     GPIOA->MODER &= ~((3 << 18) | (3 << 20));     // Clear MODER9,10

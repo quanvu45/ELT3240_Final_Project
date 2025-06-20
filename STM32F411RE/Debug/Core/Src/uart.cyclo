@@ -1,8 +1,8 @@
 ../Core/Src/uart.c:6:6:USART1_Init	1
-../Core/Src/uart.c:23:6:USART1_ReadChar	2
-../Core/Src/uart.c:28:6:USART1_ReadString	4
-../Core/Src/uart.c:41:6:USART1_SendChar	2
-../Core/Src/uart.c:46:6:USART1_SendString	2
-../Core/Src/uart.c:51:6:USART2_Init	1
-../Core/Src/uart.c:64:6:USART2_SendChar	2
-../Core/Src/uart.c:69:6:USART2_SendString	2
+../Core/Src/uart.c:26:6:USART1_ReadChar	2
+../Core/Src/uart.c:31:6:USART1_ReadString	4
+../Core/Src/uart.c:44:6:USART1_SendChar	2
+../Core/Src/uart.c:49:6:USART1_SendString	2
+../Core/Src/uart.c:54:6:USART2_Init	1
+../Core/Src/uart.c:67:6:USART2_SendChar	2
+../Core/Src/uart.c:72:6:USART2_SendString	2
