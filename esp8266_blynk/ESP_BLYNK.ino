@@ -10,7 +10,6 @@ WidgetLED LEDCONNECT(V0);
 WidgetTerminal terminal(LOG_TERMINAL);
 
 unsigned long timeBlink = 0;
-unsigned long lastAlert = 0;
 String serialBuffer = "";
 
 void setup() {
@@ -18,7 +17,6 @@ void setup() {
   espConfig.begin();
 
   configTime(0, 0, "pool.ntp.org", "time.nist.gov");  // Đồng bộ thời gian thực
-
   delay(1000);
 
 #ifdef DEBUG
@@ -41,28 +39,29 @@ void loop() {
       if (ppm > 0) {
         Blynk.virtualWrite(GAS_VALUE, ppm);
 
-        if (ppm > 2000) {
-          // Lấy thời gian thực
-          time_t now = time(nullptr);
-          struct tm *tm_struct = localtime(&now);
-          char timeStr[10];
-          sprintf(timeStr, "%02d:%02d:%02d", tm_struct->tm_hour, tm_struct->tm_min, tm_struct->tm_sec);
+        // Lấy thời gian thực
+        time_t now = time(nullptr);
+        struct tm *tm_struct = localtime(&now);
+        char timeStr[10];
+        sprintf(timeStr, "%02d:%02d:%02d", tm_struct->tm_hour, tm_struct->tm_min, tm_struct->tm_sec);
 
+        if (ppm >= 550 && ppm <= 700) {
+          // ALARM event
 #ifdef DEBUG
-          Serial.printf("[%s] Gas: %d ppm (CRITICAL)\n", timeStr, ppm);
+          Serial.printf("[%s] Gas: %d ppm (ALARM)\n", timeStr, ppm);
 #endif
-
-          terminal.printf("[%s] Gas: %d ppm (CRITICAL)\n", timeStr, ppm);
+          terminal.printf("[%s] Gas: %d ppm (ALARM)\n", timeStr, ppm);
           terminal.flush();
-
-          // if (millis() - lastAlert > 15000) {
-            // Blynk.logEvent("alert", "Gas > 2000 ppm! (" + String(ppm) + ")");
-          Blynk.logEvent("alarm", "Gas > 2000 ppm! vượt quá mức cho phép");
+          Blynk.logEvent("alarm", "Nồng độ khí gas vượt ngưỡng cảnh báo (550–700 ppm): " + String(ppm));
+        }
+        else if (ppm > 700) {
+          // DANGER event
+#ifdef DEBUG
+          Serial.printf("[%s] Gas: %d ppm (DANGER)\n", timeStr, ppm);
+#endif
+          terminal.printf("[%s] Gas: %d ppm (DANGER)\n", timeStr, ppm);
           terminal.flush();
-
-
-            // lastAlert = millis();
-          // }
+          Blynk.logEvent("danger", "CẢNH BÁO NGUY HIỂM: Nồng độ khí gas > 700 ppm (" + String(ppm) + ")");
         }
       }
 
