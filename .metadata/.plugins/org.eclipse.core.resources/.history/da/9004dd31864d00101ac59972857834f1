@@ -16,8 +16,11 @@
 float MQ2_ConvertPPM(uint16_t adc_value) {
     float voltage = (adc_value * 3.3f) / 4095.0f;
     float Rs = (3.3f - voltage) * 10.0f / voltage; // RL = 10k
+
     float R0 = 92.8f;  // Đặt theo giá trị đo thực tế
     float ratio = Rs / R0;
+
+    // Áp dụng công thức log-log từ MQ2 datasheet (LPG)
     float ppm = 400.0f * powf(ratio, -1.5f);  // Thử với -1.4f hoặc -1.3f nếu cần hạ nhạy
     return ppm;
 }
